@@ -27,10 +27,10 @@ class Hand:
 
         self.cards.append(card)
 
-	def Reset(self):
-		'''The hand return to be empty'''
-		
-		self.cards = []
+    def Reset(self):
+        '''The hand return to be empty'''
+
+        self.cards = []
             
     def Remove(self):
         '''Remove the FIRST card in the hand'''
@@ -115,13 +115,13 @@ class Player:
         '''Lose your bet'''
         
         self.money -= self.bet
-        
+
 
 class Dealer:
-	
-	def __init__(self):
-		self.hand = Hand() #Also the dealer has a hand
+
+    def __init__(self):
+        self.hand = Hand() #Also the dealer has a hand
         
  
 class Game:
-	pass
+    pass
