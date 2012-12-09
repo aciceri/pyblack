@@ -23,9 +23,14 @@ class Hand:
         self.cards = [] #The hand is empty
         
     def Add(self, card):
-        '''Add a card to the hand at the END'''
+        '''Add a card at the END of the hand'''
 
         self.cards.append(card)
+
+	def Reset(self):
+		'''The hand return to be empty'''
+		
+		self.cards = []
             
     def Remove(self):
         '''Remove the FIRST card in the hand'''
@@ -81,7 +86,7 @@ class Deck(Hand):
         shuffle(self.cards)
         
         
-class Player():
+class Player:
     '''
     This simple class manages player objects.
     It allow to have some simple thing with them,
@@ -111,7 +116,12 @@ class Player():
         
         self.money -= self.bet
         
-        
-        
 
-
+class Dealer:
+	
+	def __init__(self):
+		self.hand = Hand() #Also the dealer has a hand
+        
+ 
+class Game:
+	pass

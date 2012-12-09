@@ -3,7 +3,7 @@
 class Carta:
 	'''Classe per la gestione dell''oggetto carta'''
 	
-	lvalori = [None, 'Uno', 'Due', 'Tre', 'Quattro', 'Cinque', 'Sei', 'Sette', 'Otto', 'Nove', 'Dieci', 'Jack', 'Donna', 'Re']
+    lvalori = [None, 'Uno', 'Due', 'Tre', 'Quattro', 'Cinque', 'Sei', 'Sette', 'Otto', 'Nove', 'Dieci', 'Jack', 'Donna', 'Re']
 	lsemi = ['Cuori', 'Quadri', 'Fiori', 'Picche']
 	
 	def __init__(self, valore = 0, seme = 0): #Crea un oggetto carta(0 di Cuori di default)
