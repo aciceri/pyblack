@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from random import shuffle
 
 class Card:
@@ -7,11 +9,8 @@ class Card:
     '''
     
     def __init__(self, rank, suit):
-        self.rank, self.suit = None, None #Mark and suit are None
-        if rank in range(1, 14): #Unless it is in range
-            self.rang = rank
-        if suit in range(1, 5): #Unless it is in range
-            self.suit = suit
+        self.rank = rank
+        self.suit = suit
             
 class Hand:
     '''
@@ -22,6 +21,23 @@ class Hand:
     def __init__(self):
         self.cards = [] #The hand is empty
         
+    def __str__(self):
+        suits = ['♠', '♥', '♦', '♣']
+        s = ''
+        for card in self.cards:
+            s += '- '
+            if card.rank <= 10:
+                 s += str(card.rank)
+            else:
+                if card.rank == 11:
+                    s += 'J'
+                elif card.rank == 12:
+                    s += 'Q'
+                elif card.rank == 13:
+                    s += 'K'
+            s += str(suits[card.suit - 1]) + '\n'
+        return s
+        
     def Add(self, card):
         '''Add a card at the END of the hand'''
 
@@ -29,7 +45,7 @@ class Hand:
 
     def Reset(self):
         '''The hand return to be empty'''
-
+        
         self.cards = []
             
     def Remove(self):
@@ -57,15 +73,16 @@ class Hand:
         
         self.value = 0 #The value of the hand is zero at beginning
         for card in self.cards: #For every card in the hand
-            if card.mark > 10: #If it is a figure...
+            if card.rank > 10: #If it is a figure...
                 self.value += 10 #...is value is 10
-            elif card.mark == 1: #If it is an ace...
+            elif card.rank == 1: #If it is an ace...
                 if ace: #...according to the parameter...
                     self.value += 1 #...his value is 1...
                 else:
                     self.value += 11 #...or 11
             else:
-                self.value += card.mark #Else his value is the mark
+                self.value += card.rank #Else his value is the mark
+        return self.value
 
 class Deck(Hand):
     '''
@@ -80,10 +97,11 @@ class Deck(Hand):
             for suit in range(1, 5): #for every suits
                 self.Add(Card(mark, suit)) #Add a card to the deck
                 
-    def Shuffle(self):
+    def Shuffle(self, times):
         '''Shuffle the deck though it is empty'''
         
-        shuffle(self.cards)
+        for i in range(times):
+            shuffle(self.cards)
         
         
 class Player:
@@ -93,8 +111,8 @@ class Player:
     like bet or win money.
     '''
     
-    def __init__(self):
-        self.money = 200
+    def __init__(self, money):
+        self.money = money
         self.hand = Hand() #Every player has a hand
         
     def Bet(self, bet):
@@ -110,18 +128,106 @@ class Player:
         '''Win your bet'''
         
         self.money += self.bet * 0.5
+        print('You win ' + str(self.bet * 0.5) + '$, so now you have ' + str(self.money) + '$')
     
     def Lose(self):
         '''Lose your bet'''
         
         self.money -= self.bet
+        print('You lose ' + str(self.bet) + '$, so now you have ' + str(self.money) + '$')
+        
+    def Take(self, deck, ncards):
+        for i in range(ncards):
+            self.hand.Add(deck.Remove())
 
-
-class Dealer:
+class Dealer(Player):
+    '''
+    This is class manages the dealer
+    '''
 
     def __init__(self):
         self.hand = Hand() #Also the dealer has a hand
-        
+            
+    def Play(self, deck):
+        while self.hand.Value(True) < 17:
+            self.Take(deck, 1)
  
 class Game:
-    pass
+    '''
+    This class manages the rules of the game
+    '''
+    
+    def __init__(self):
+        self.deck = Deck()
+        self.deck.Shuffle(10)
+        money = input('How much money do you have? ')
+        print('')
+        self.player = Player(money)
+        self.dealer = Dealer()
+        
+    def Play(self):
+        stillplay = True
+
+        while stillplay: #For every game
+            bet = input('What is yout bet? ')
+            self.player.Bet(bet)
+            self.player.hand.Reset()
+            self.dealer.hand.Reset()
+            self.player.Take(self.deck, 2)
+            self.dealer.Take(self.deck, 1)
+            
+            print('Value of dealer\'s hand: ' + str(self.dealer.hand.Value(True)))
+            print(self.dealer.hand)
+            
+            stillhit = True
+            
+            while stillhit:
+                print('Value of your hand: ' + str(self.player.hand.Value(True)))
+                print(self.player.hand)
+                
+                hitorstand = raw_input('Do you want Hit or Stand? ')
+                
+                if hitorstand == 'h':
+                    self.player.Take(self.deck, 1)
+                    if self.player.hand.Value(True) == 21:
+                        print('Value of your hand: ' + str(self.player.hand.Value(True)))
+                        print(self.player.hand)
+                        print('You make BlackJack')
+                        self.player.Win()
+                        stillhit = False
+                    elif self.player.hand.Value(True) > 21:
+                        print('Value of your hand: ' + str(self.player.hand.Value(True)))
+                        print(self.player.hand)
+                        print('You bust')
+                        self.player.Lose()
+                        stillhit = False
+                elif hitorstand == 's':
+                    self.dealer.Play(self.deck)
+                    print('Dealer played, the value of his hand is: ' + str(self.dealer.hand.Value(True)))
+                    print(self.dealer.hand)
+                    if self.dealer.hand.Value(True) > 21:
+                        print('The dealer busts')
+                        self.player.Win()
+                    elif self.dealer.hand.Value(True) > self.player.hand.Value(True):
+                        print('The value of dealer\'s hand is higher than your')
+                        self.player.Lose()
+                    elif self.dealer.hand.Value(True) == self.player.hand.Value(True):
+                        print('The value of dealer\'s hand is the same than your')
+                        self.player.Lose()
+                    elif self.dealer.hand.Value(True) < self.player.hand.Value(True):
+                        print('The value of dealer\'s hand is lower than your')
+                        self.player.Win()
+                    stillhit = False
+            
+            playagain = raw_input('Do you want play again? ')
+            if playagain == 'n':
+                #At ththank you for playing with blackjacke end of the game you can play again or not
+                print('Thank you for playing')
+                stillplay = False
+        
+        
+        
+        
+        
+game = Game()
+game.Play()
