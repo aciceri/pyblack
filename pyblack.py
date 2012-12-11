@@ -331,7 +331,7 @@ class Game:
                         #the value of player's hand are equal
                         
                         self.player.Lose()
-                        self.view.Lose('Il banco ha fatto' +
+                        self.view.Lose('Il banco ha fatto ' +
                                        'esattamente come te')
                         
                     elif self.dealer.hand.Value(True) < \
