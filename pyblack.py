@@ -2,6 +2,7 @@
 
 from random import shuffle
 
+
 class Card:
     '''
     This simple class manages single card objects.
@@ -11,7 +12,8 @@ class Card:
     def __init__(self, rank, suit):
         self.rank = rank
         self.suit = suit
-            
+
+ 
 class Hand:
     '''
     This class manages hands that are lists of card object.
@@ -23,13 +25,17 @@ class Hand:
         
     def __str__(self):
         suits = ['Picche', 'Cuori', 'Quadri', 'Fiori']
-        ranks = ['Asso', 'Due', 'Tre', 'Quattro', 'Cinque', 'Sei', 'Sette', 'Otto', 'Nove', 'Dieci', 'Jack', 'Regina', 'Re']
+        ranks = ['Asso', 'Due', 'Tre', 'Quattro', 'Cinque',
+                 'Sei', 'Sette', 'Otto', 'Nove', 'Dieci',
+                 'Jack', 'Regina', 'Re']
         s = ''
         for card in self.cards:
-            s += ' ' + ranks[card.rank - 1] + ' di ' + suits[card.suit - 1] + '\n'
+            s += (' ' + ranks[card.rank - 1] + ' di '
+                 + suits[card.suit - 1] + '\n')
         return s
     
     def IsAce(self):
+        '''Check if is there at least one ace in the hand'''
         
         for card in self.cards:
             if card.rank == 1:
@@ -71,6 +77,7 @@ class Hand:
                 self.value += card.rank #Else his value is the mark
         return self.value
 
+
 class Deck(Hand):
     '''
     This class is inherited from Hand class.
@@ -89,6 +96,7 @@ class Deck(Hand):
         
         for i in range(times):
             shuffle(self.cards)
+        
         
 class Player:
     '''
@@ -121,23 +129,31 @@ class Player:
         self.money -= self.bet
         
     def Take(self, deck, ncards):
+        '''Add n cards to the hand taking them form the deck'''
         for i in range(ncards):
             self.hand.Add(deck.Remove())
 
+
 class Dealer(Player):
     '''
-    This is class manages the dealer
+    This class manages the dealer
     '''
 
     def __init__(self):
         self.hand = Hand() #Also the dealer has a hand
             
     def Play(self, deck):
+        '''The dealer plays according to his rule'''
+        
         while self.hand.Value(True) < 17:
             self.Take(deck, 1)
  
+ 
 class View:
-
+    '''
+    This class manages the interface from
+    the player to the game and vice versa
+    '''
 
     def __init__(self, deck, player, dealer):
         self.deck = deck
@@ -145,6 +161,8 @@ class View:
         self.dealer = dealer
 
     def AskBet(self):
+        '''Return how much the player wants to bet'''
+        
         bet = input('Quanto vuoi scommettere? ')
         while bet > self.player.money:
             print('Non hai abbastanza denaro!')
@@ -152,35 +170,60 @@ class View:
         return bet
         
     def DealerHand(self):
-        print('La mano del banco vale ' + str(self.dealer.hand.Value(True)))
+        
+        '''Print the dealer's hand'''
+        print('La mano del banco vale ' + 
+              str(self.dealer.hand.Value(True)))
         print(self.dealer.hand)
         
     def PlayerHand(self):
-        if self.player.hand.IsAce() and self.player.hand.Value(False) <= 21:
-            print('La tua mano vale ' + str(self.player.hand.Value(True)) + ' o ' + str(self.player.hand.Value(False)))
+        '''Print the player's hand'''
+        
+        if (self.player.hand.IsAce() and 
+            self.player.hand.Value(False) <= 21):
+            print('La tua mano vale ' + 
+                  str(self.player.hand.Value(True)) + ' o '
+                  + str(self.player.hand.Value(False)))
         else:
-            print('La tua mano vale ' + str(self.player.hand.Value(True))) #True or False is equal, there is no ace
+            print('La tua mano vale ' + 
+                  str(self.player.hand.Value(True)))
         print(self.player.hand)
 
     def AskHitStand(self):
+        '''Return true if the player wants hit'''
+       
         while True:
-            hitstand = raw_input('Vuoi chiedere Carta o Stare("c" o "s")? ')
+            hitstand = raw_input('Vuoi chiedere Carta o ' + 
+                                 'Stare("c" o "s")? ')
             if hitstand == 'c' or hitstand == 's':
                 break
-        return hitstand
+        if hitstand == 'c':
+            return True
+        else:
+            return False
         
     def PlayerMoney(self):
+        '''Print how much money you have'''
+        
         print('Hai ' + str(self.player.money) + '$')
         
     def Win(self, string):
+        '''Print your bet and your new money'''
+        
         print(string)
-        print('Hai vinto ' + str(self.player.bet * 1.5) + '$, quindi ora hai ' + str(self.player.money) + '$')
+        print('Hai vinto ' + str(self.player.bet * 1.5) +
+              '$, quindi ora hai ' + str(self.player.money) + '$')
         
     def Lose(self, string):
+        '''Print your bet and your new money'''
+        
         print(string)
-        print('Hai perso ' + str(self.player.bet) + '$, quindi ora hai ' + str(self.player.money) + '$')
+        print('Hai perso ' + str(self.player.bet) +
+              '$, quindi ora hai ' + str(self.player.money) + '$')
         
     def PlayAgain(self):
+        ''' '''
+        
         while True:
             playagain = raw_input('Vuoi giocare ancora("s" o "n")? ')
             if playagain == 's' or playagain == 'n':
@@ -188,8 +231,12 @@ class View:
         return playagain
  
     def Credits(self):
+        '''Thank the player'''
+        
         print('Grazie per aver giocato')
-        print('Se hai riscontrato bug scrivi pure ad andreaciceri96@gmail.com')
+        print('Se hai riscontrato bug scrivi ' + 
+              'pure ad andreaciceri96@gmail.com')
+ 
  
 class Game:
     '''
@@ -222,57 +269,89 @@ class Game:
             
             while stillhit: #Until the player hits
                 self.view.PlayerHand() #Print the player's hand
-                hitorstand = self.view.AskHitStand() #Hit or stand?
+                hit = self.view.AskHitStand() #Hit or stand?
                 
                 
-                if hitorstand == 'c':
+                if hit:
                     self.player.Take(self.deck, 1)
                     
-                    if self.player.hand.Value(True) == 21 or self.player.hand.Value(False) == 21: #If one hand at least is 21
+                    if self.player.hand.Value(True) == 21 or \
+                        self.player.hand.Value(False) == 21:
+                         #If the value's hand is 21(both ace's value)
+                         
                         self.view.PlayerHand() #Print the player's hand
                         self.player.Win()
                         self.view.Win('Hai fatto Blakjack')
                         
                         stillhit = False
                     
-                    elif self.player.hand.Value(True) > 21 and self.player.hand.Value(False) > 21: #If both the hands bust
+                    elif self.player.hand.Value(True) > 21 and \
+                        self.player.hand.Value(False) > 21:
+                        #If the value's hand busts(both ace's value)
+                        
                         self.view.PlayerHand() #Print the player's hand
                         self.player.Lose()
                         self.view.Lose('Hai sballato')
                         
                         stillhit = False
                     
-                elif hitorstand == 's':
-                    self.dealer.Play(self.deck) #According to the dealer's rule
+                else:
+                    self.dealer.Play(self.deck)
+                    #According to the dealer's rule
+                    
                     self.view.DealerHand()
                     
                     if self.dealer.hand.Value(True) == 21:
+                        #If the value of dealer's hand is 21
+                        
                         self.player.Lose()
                         self.view.Lose('Il banco ha fatto Blakjack')
                     
                     elif self.dealer.hand.Value(True) > 21:
+                        #If the value of dealer's hand is more than 21
+
                         self.player.Win()
                         self.view.Win('Il banco ha sballato')
                         
-                    elif self.dealer.hand.Value(True) > self.player.hand.Value(True) and self.dealer.hand.Value(True) > self.player.hand.Value(False):
+                    elif self.dealer.hand.Value(True) > \
+                        self.player.hand.Value(True) and \
+                        self.dealer.hand.Value(True) > \
+                        self.player.hand.Value(False):
+                        #If the value of dealer's hand is more
+                        #than the value of player's hand
+                        
                         self.player.Lose()
                         self.view.Lose('Il banco ha fatto più di te')
                         
-                    elif self.dealer.hand.Value(True) == self.player.hand.Value(True) and self.dealer.hand.Value(True) == self.player.hand.Value(False):
-                        self.player.Lose()
-                        self.view.Lose('Il banco ha fatto esattamente come te')
+                    elif self.dealer.hand.Value(True) == \
+                        self.player.hand.Value(True) and \
+                        self.dealer.hand.Value(True) == \
+                        self.player.hand.Value(False):
+                        #If the value of dealer's hand and
+                        #the value of player's hand are equal
                         
-                    elif self.dealer.hand.Value(True) < self.player.hand.Value(True) or self.dealer.hand.Value(True) < self.player.hand.Value(False):
+                        self.player.Lose()
+                        self.view.Lose('Il banco ha fatto' +
+                                       'esattamente come te')
+                        
+                    elif self.dealer.hand.Value(True) < \
+                        self.player.hand.Value(True) or \
+                        self.dealer.hand.Value(True) < \
+                        self.player.hand.Value(False):
+                        #If the value of dealer's hand is less
+                        #than the value of player's hand
+                        
                         self.player.Win()
                         self.view.Win('Il banco ha fatto meno di te')
 
                     stillhit = False
             
             playagain = self.view.PlayAgain()
-            if playagain == 'n':
-                #At ththank you for playing with blackjacke end of the game you can play again or not
+            
+            if playagain == 'n': #If the player don't want play again
                 self.view.Credits()
                 stillplay = False
+
 
 
 if __name__ == "__main__":  
