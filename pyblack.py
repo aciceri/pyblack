@@ -24,13 +24,13 @@ class Hand:
         self.cards = [] #The hand is empty
         
     def __str__(self):
-        suits = ['Picche', 'Cuori', 'Quadri', 'Fiori']
-        ranks = ['Asso', 'Due', 'Tre', 'Quattro', 'Cinque',
-                 'Sei', 'Sette', 'Otto', 'Nove', 'Dieci',
-                 'Jack', 'Regina', 'Re']
+        suits = ['Spades', 'Hearts', 'Diamonds', 'Clubs']
+        ranks = ['Ace', 'Two', 'Three', 'Four', 'Five',
+                 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+                 'Jack', 'Queen', 'King']
         s = ''
         for card in self.cards:
-            s += (' ' + ranks[card.rank - 1] + ' di '
+            s += (' ' + ranks[card.rank - 1] + ' of '
                  + suits[card.suit - 1] + '\n')
         return s
     
@@ -163,41 +163,41 @@ class View:
     def AskBet(self):
         '''Return how much the player wants to bet'''
         
-        bet = input('Quanto vuoi scommettere? ')
+        bet = input('How much is your bet? ')
         while bet > self.player.money:
-            print('Non hai abbastanza denaro!')
-            bet = input('Quanto vuoi scommettere? ')
+            print('You don\'t have enough money!')
+            bet = input('How much is your bey? ')
         return bet
         
     def DealerHand(self):
         
-        '''Print the dealer's hand'''
-        print('La mano del banco vale ' + 
+        '''Print the dealer\'s hand''' 
+        print('The dealer\'s hand is ' + 
               str(self.dealer.hand.Value(True)))
         print(self.dealer.hand)
         
     def PlayerHand(self):
-        '''Print the player's hand'''
+        '''Print the player\'s hand'''
         
         if (self.player.hand.IsAce() and 
             self.player.hand.Value(False) <= 21):
-            print('La tua mano vale ' + 
-                  str(self.player.hand.Value(True)) + ' o '
+            print('Your hand is ' + 
+                  str(self.player.hand .Value(True)) + ' o '
                   + str(self.player.hand.Value(False)))
         else:
-            print('La tua mano vale ' + 
+            print('Your hand is ' +  
                   str(self.player.hand.Value(True)))
         print(self.player.hand)
 
     def AskHitStand(self):
-        '''Return true if the player wants hit'''
+        '''Return true if the pl ayer wants hit'''
        
         while True:
-            hitstand = raw_input('Vuoi chiedere Carta o ' + 
-                                 'Stare("c" o "s")? ')
-            if hitstand == 'c' or hitstand == 's':
+            hitstand = raw_input( 'Do you want Hit or ' + 
+                                 'Stand("h" or "s")? ')
+            if hitstand == 'h' or hitstand == 's':
                 break
-        if hitstand == 'c':
+        if hitstand == 'h':
             return True
         else:
             return False
@@ -205,37 +205,40 @@ class View:
     def PlayerMoney(self):
         '''Print how much money you have'''
         
-        print('Hai ' + str(self.player.money) + '$')
+        print('You have ' + str(self.player.money) + '$')
         
     def Win(self, string):
         '''Print your bet and your new money'''
         
         print(string)
-        print('Hai vinto ' + str(self.player.bet * 1.5) +
-              '$, quindi ora hai ' + str(self.player.money) + '$')
+        print('You win ' + str(self.player.bet * 1.5) +
+              '$, so now you have ' + str(self.player.money) + '$')
         
     def Lose(self, string):
         '''Print your bet and your new money'''
         
         print(string)
-        print('Hai perso ' + str(self.player.bet) +
-              '$, quindi ora hai ' + str(self.player.money) + '$')
+        print('You lose ' + str(self.player.bet) +
+              '$, so now you have '  + str(self.player.money) + '$')
         
     def PlayAgain(self):
         ''' '''
         
         while True:
-            playagain = raw_input('Vuoi giocare ancora("s" o "n")? ')
-            if playagain == 's' or playagain == 'n':
-                break
-        return playagain
+            playagain = raw_input('Do you want play again("y" or "n")? ')
+            if playagain == 'y':
+                return False
+            elif playagain == 'n':
+                return True
+            else:
+                print('I don\'t understand')
  
     def Credits(self):
         '''Thank the player'''
         
-        print('Grazie per aver giocato')
-        print('Se hai riscontrato bug scrivi ' + 
-              'pure ad andreaciceri96@gmail.com')
+        print('Thank you for playing')
+        print('If you have found bugs, ' + 
+               'please write to andreaciceri96@gmail.com')
  
  
 class Game:
@@ -281,7 +284,7 @@ class Game:
                          
                         self.view.PlayerHand() #Print the player's hand
                         self.player.Win()
-                        self.view.Win('Hai fatto Blakjack')
+                        self.view.Win('You did Black Jack')
                         
                         stillhit = False
                     
@@ -291,7 +294,7 @@ class Game:
                         
                         self.view.PlayerHand() #Print the player's hand
                         self.player.Lose()
-                        self.view.Lose('Hai sballato')
+                        self.view.Lose('You busted')
                         
                         stillhit = False
                     
@@ -305,13 +308,13 @@ class Game:
                         #If the value of dealer's hand is 21
                         
                         self.player.Lose()
-                        self.view.Lose('Il banco ha fatto Blakjack')
+                        self.view.Lose('The dealer did Blak Jack')
                     
                     elif self.dealer.hand.Value(True) > 21:
                         #If the value of dealer's hand is more than 21
 
                         self.player.Win()
-                        self.view.Win('Il banco ha sballato')
+                        self.view.Win('The dealer busted')
                         
                     elif self.dealer.hand.Value(True) > \
                         self.player.hand.Value(True) and \
@@ -321,7 +324,7 @@ class Game:
                         #than the value of player's hand
                         
                         self.player.Lose()
-                        self.view.Lose('Il banco ha fatto più di te')
+                        self.view.Lose('The dealer is higher than you')
                         
                     elif self.dealer.hand.Value(True) == \
                         self.player.hand.Value(True) and \
@@ -331,8 +334,7 @@ class Game:
                         #the value of player's hand are equal
                         
                         self.player.Lose()
-                        self.view.Lose('Il banco ha fatto ' +
-                                       'esattamente come te')
+                        self.view.Lose('The dealer is equeal to you')
                         
                     elif self.dealer.hand.Value(True) < \
                         self.player.hand.Value(True) or \
@@ -342,13 +344,13 @@ class Game:
                         #than the value of player's hand
                         
                         self.player.Win()
-                        self.view.Win('Il banco ha fatto meno di te')
+                        self.view.Win('The dealer is lower than you')
 
                     stillhit = False
             
             playagain = self.view.PlayAgain()
             
-            if playagain == 'n': #If the player don't want play again
+            if playagain: #If the player don't want play again
                 self.view.Credits()
                 stillplay = False
 
